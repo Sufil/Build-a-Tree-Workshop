@@ -10,6 +10,8 @@ namespace Tannenbaum_Builder
 {
     class Program
     {
+        static Random random = new Random();
+
         static void Main(string[] args)
         {
             bool sold = false;
@@ -39,7 +41,8 @@ namespace Tannenbaum_Builder
                     }
                 }
 
-                drawTree(height);
+                bool decorated = askForDecoration();
+                drawTree(height, decorated);
 
                 askForLeaving();
 
@@ -51,7 +54,7 @@ namespace Tannenbaum_Builder
             Console.WriteLine("Come on. Give a reasonable answer\n");
         }
 
-        private static void drawTree(int m)
+        private static void drawTree(int m, bool decorated)
         {
 
             int row = 0;
@@ -85,12 +88,21 @@ namespace Tannenbaum_Builder
 
             for (int i = 1; i <= treeLength; i++)
             {
-                string tree = "*";
                 string space = "";
+                string tree;
+
+                if (decorated)
+                {
+                    tree = "*".Pastel(getRandColor());
+                }
+                else
+                {
+                    tree = "*".Pastel("#00ef40");
+                }
 
                 for (int j = i; j < 2 * i - 1 - row; j++)
                 {
-                    tree = string.Format("{0}**", tree);
+                    tree = string.Format("{0}{1}", tree, getDecoration(decorated));
                 }
 
 
@@ -104,7 +116,7 @@ namespace Tannenbaum_Builder
                     }
                 }
 
-                Console.WriteLine(string.Format("{0}{1}", space, tree).Pastel("#00ef40"));
+                Console.WriteLine(string.Format("{0}{1}", space, tree));
 
                 if (i % 3 == 0)
                 {
@@ -122,6 +134,57 @@ namespace Tannenbaum_Builder
             }
 
         }
+
+        private static string getDecoration(bool decoration)
+        {
+
+            string text = "";
+
+            if (decoration)
+            {
+                for(int i = 0; i < 2; i++)
+                {
+                    text = string.Format("{0}{1}", text, "*".Pastel(getRandColor()));
+                }
+            }
+
+            else
+            {
+                text = "**".Pastel("#00ef40");
+            }
+
+            return text;
+        }
+
+        private static string getRandColor()
+        {
+            string[] colorOptions = new string[] { "#ea2e06", "#06ffff", "#a229ea", "#fb195c", "#faff2e" }; 
+
+            int color = random.Next(0, 50);
+
+            if (color <= 4)
+            {
+                return colorOptions[color];
+            }
+
+            else
+            {
+                return "#00ef40";
+            }
+        }
+
+        private static bool askForDecoration()
+        {
+            Console.WriteLine("You wanna buy an undecorated or a decorated tree?\n\t1:Decorated\t2:Undecorated");
+           
+            if (Console.ReadLine() == "1")
+            {
+                return true;
+            }
+           
+            return false;
+        }
+
 
         private static int getExtraWidth(int height)
         {
@@ -157,15 +220,23 @@ namespace Tannenbaum_Builder
 
         private static void askForLeaving()
         {
-            Console.WriteLine("Thank you! Want another? \n1: Yes\t2: No\n");
-            string answer = Console.ReadLine();
-            
-            if (answer == "2")
+            bool answered = false;
+
+            while (!answered)
             {
-                Environment.Exit(0);
+                Console.WriteLine("Thank you! Want another? \n1: Yes\t2: No\n");
+                string answer = Console.ReadLine();
+
+                if (answer == "2")
+                {
+                    Environment.Exit(0);
+                }
+
+                else if (answer == "1")
+                {
+                    answered = true;
+                }
             }
         }
-
-        
     }
 }
